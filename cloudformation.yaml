@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Send a reminder to bring an umbrella on rainy days.
+
+Parameters:
+  PhoneNumber:
+    Type: String
+    Description: The phone number recipient of the weather alert, in E.164 (e.g. +15555550100) format.
+  WeatherLocation: 
+    Type: String
+    Default: 0
+    Description: Latitude, longitude pair of location to fetch weather for.
+  TimeZone:
+    Type: String
+    Default: 0
+    Description: Local time zone for displaying weather and waiting for MessageLocalTime.
+  DarkSkyKey:
+    Type: String
+    Default: 0
+    Description: Your Dark Sky API key from https://darksky.net/dev.
+  MessageLocalTime:
+    Type: String
+    Default: 0
+    Description: The local time at which to check the weather. Must be at zero-padded and at fifteen minute interval, e.g. 08:15.
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: umbrella.lambda_handler
+      Runtime: python3.6
+      Timeout: 5
+      CodeUri: app
+      Environment:
+        Variables:
+          PHONE_NUMBER: !Ref PhoneNumber
+          DARK_SKY_KEY: !Ref DarkSkyKey
+          MESSAGE_LOCAL_TIME: !Ref MessageLocalTime
+          TIME_ZONE: !Ref TimeZone
+          WEATHER_LOCATION: !Ref WeatherLocation
+      Events:
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: 'cron(0/15 * * * ? *)'
+      Policies:
+       - AWSLambdaBasicExecutionRole
+       - Version: '2012-10-17'
+         Statement:
+           - Effect: Allow
+             Action:
+               - sns:Publish
+             Resource: "*"
