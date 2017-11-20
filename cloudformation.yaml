@@ -8,20 +8,19 @@ Parameters:
     Description: The phone number recipient of the weather alert, in E.164 (e.g. +15555550100) format.
   WeatherLocation: 
     Type: String
-    Default: 0
+    Default: 47.62,-122.34
     Description: Latitude, longitude pair of location to fetch weather for.
   TimeZone:
     Type: String
-    Default: 0
+    Default: America/Los_Angeles
     Description: Local time zone for displaying weather and waiting for MessageLocalTime.
   DarkSkyKey:
     Type: String
-    Default: 0
     Description: Your Dark Sky API key from https://darksky.net/dev.
   MessageLocalTime:
     Type: String
-    Default: 0
-    Description: The local time at which to check the weather. Must be at zero-padded and at fifteen minute interval, e.g. 08:15.
+    Default: 08:00
+    Description: The local time at which to check the weather. Must be zero-padded and at a fifteen minute interval, e.g. 08:15.
 
 Resources:
   Function:
