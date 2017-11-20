@@ -32,7 +32,7 @@ Resources:
       CodeUri: app
       Environment:
         Variables:
-          PHONE_NUMBER: !Ref PhoneNumber
+          SNS_TOPIC: !Ref SNSTopic
           DARK_SKY_KEY: !Ref DarkSkyKey
           MESSAGE_LOCAL_TIME: !Ref MessageLocalTime
           TIME_ZONE: !Ref TimeZone
@@ -43,10 +43,13 @@ Resources:
           Properties:
             Schedule: 'cron(0/15 * * * ? *)'
       Policies:
-       - AWSLambdaBasicExecutionRole
-       - Version: '2012-10-17'
-         Statement:
-           - Effect: Allow
-             Action:
-               - sns:Publish
-             Resource: "*"
+       - SNSPublishMessagePolicy:
+           TopicName: !GetAtt SNSTopic.TopicName
+  SNSTopic:
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      DisplayName: Umbrella
+      Subscription:
+        -
+          Endpoint: !Ref PhoneNumber
+          Protocol: sms

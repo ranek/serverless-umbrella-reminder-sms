@@ -7,17 +7,14 @@ from datetime import datetime
 import pytz
 import itertools
 
-PHONE_NUMBER = os.environ['PHONE_NUMBER']
+SNS_TOPIC = os.environ['SNS_TOPIC']
 WEATHER_LOCATION = os.environ['WEATHER_LOCATION']
 TIME_ZONE = os.environ['TIME_ZONE']
 DARK_SKY_KEY = os.environ['DARK_SKY_KEY']
 MESSAGE_LOCAL_TIME = os.environ['MESSAGE_LOCAL_TIME']
 
 time_zone = pytz.timezone(TIME_ZONE)
-
-# Force connection to us-west-2, since not all regions support SMS
-sns_client = boto3.client('sns', region_name='us-west-2')
-
+sns_topic = boto3.resource('sns').Topic(SNS_TOPIC)
 
 def get_forecast(dark_sky_key, location):
     return requests.get("https://api.darksky.net/forecast/%s/%s?units=si" %
@@ -96,7 +93,6 @@ def lambda_handler(event, context):
 
         if alert:
             print("Sending alert: %s" % alert)
-            response = sns_client.publish(
-                PhoneNumber=PHONE_NUMBER, Message=alert)
+            sns_topic.publish(Message=alert)
         else:
             print("Looks like clear skies today!")
