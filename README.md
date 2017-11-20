@@ -1,12 +1,14 @@
 # serverless-umbrella-reminder-sms
 
-This is an [AWS Lambda](https://aws.amazon.com/lambda/) function, [Powered by Dark Sky](https://darksky.net/poweredby/), that checks the forecast at a predetermined time each day, and sends you an SMS [Amazon Simple Notification Service](https://aws.amazon.com/sns/) if heavy rain is in the forecast. 
+This is an [AWS Lambda](https://aws.amazon.com/lambda/) function, [Powered by Dark Sky](https://darksky.net/poweredby/), that checks the forecast at a predetermined time each day, and sends you an SMS [Amazon Simple Notification Service](https://aws.amazon.com/sns/) if heavy rain is in the forecast.
 
-You need to request your own [Dark Sky API](https://darksky.net/dev) key for this app to work. Dark Sky permits a generous 1000 free calls per day, which is more than enough for the one check required by this app. AWS SNS includes up to 100 free SMS notifications per month (at least in the United States; support for other countries may vary), and offers a substantial free tier for AWS Lambda, so this may be completely cost-free if you're just getting started with these tools, and should be fairly inexpensive even if you are already a heavy user of AWS and Dark Sky. 
+You need to request your own [Dark Sky API](https://darksky.net/dev) key for this app to work. Dark Sky permits a generous 1000 free calls per day, which is more than enough for the one check required by this app. AWS SNS includes up to 100 free SMS notifications per month (at least in the United States; support for other countries may vary), and offers a substantial free tier for AWS Lambda, so this may be completely cost-free if you're just getting started with these tools, and should be fairly inexpensive even if you are already a heavy user of AWS and Dark Sky.
+
+Please note that [SNS only supports SMS messaging in a subset of regions](http://docs.aws.amazon.com/sns/latest/dg/sms_supported-countries.html). Please see the linked support document to ensure you deploy this application in a supported region.
 
 ## Deployment
 
-Deploying this serverless app to your AWS account is quick and easy using [AWS CloudFormation](https://aws.amazon.com/cloudformation/). 
+Deploying this serverless app to your AWS account is quick and easy using [AWS CloudFormation](https://aws.amazon.com/cloudformation/).
 
 ### Packaging
 
@@ -16,7 +18,7 @@ First, let's download the required dependencies. We need to package the [pytz](h
 pip3 install -r requirements.txt -t app
 ```
 
-With the [AWS CLI](https://aws.amazon.com/cli/) installed, run the following command to upload the code to S3. You need to re-run this if you change the code in `archiver.py`. Be sure to set `DEPLOYMENT_S3_BUCKET` to a **bucket you own**; CloudFormation will copy the code function into a ZIP file in this S3 bucket, which can be deployed to AWS Lambda in the following steps. 
+With the [AWS CLI](https://aws.amazon.com/cli/) installed, run the following command to upload the code to S3. You need to re-run this if you change the code in `archiver.py`. Be sure to set `DEPLOYMENT_S3_BUCKET` to a **bucket you own**; CloudFormation will copy the code function into a ZIP file in this S3 bucket, which can be deployed to AWS Lambda in the following steps.
 
 ```sh
 DEPLOYMENT_S3_BUCKET="YOUR_S3_BUCKET"
@@ -24,7 +26,7 @@ aws cloudformation package --template-file cloudformation.yaml --s3-bucket $DEPL
   --output-template-file cloudformation-packaged.yaml
 ```
 
-Now you will have `cloudformation-packaged.yaml`, which contains the full path to the ZIP file created by the previous step. 
+Now you will have `cloudformation-packaged.yaml`, which contains the full path to the ZIP file created by the previous step.
 
 ### Configuring
 
